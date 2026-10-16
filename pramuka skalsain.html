@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALM ID | Holographic Identity Scan</title>
+<style>
+:root{--bg:#050914;--panel:rgba(12,24,43,.82);--cyan:#55eaff;--blue:#5b8cff;--muted:#91a9c7;--white:#effaff;--line:rgba(85,234,255,.22)}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#10264a 0%,#070d1b 48%,#03060d 100%);color:var(--white);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.15;background-image:linear-gradient(rgba(85,234,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(85,234,255,.12) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 85%)}
+.wrap{width:min(1100px,92vw);margin:auto;position:relative;z-index:1}.topbar{display:flex;justify-content:space-between;align-items:center;padding:25px 0;border-bottom:1px solid rgba(85,234,255,.12);letter-spacing:.15em;font-size:12px;color:var(--muted)}.brand{color:var(--cyan);font-weight:800;font-size:15px;letter-spacing:.22em}.status{display:flex;align-items:center;gap:8px}.dot{width:7px;height:7px;border-radius:50%;background:#4effb1;box-shadow:0 0 12px #4effb1}
+main{min-height:calc(100vh - 90px);display:grid;place-items:center;padding:35px 0 55px}.screen{width:100%;display:none;animation:fade .5s ease}.screen.active{display:block}@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:.24em;text-transform:uppercase}.headline{font-size:clamp(30px,5vw,52px);line-height:1.05;margin:14px 0 12px;letter-spacing:-.04em}.sub{color:var(--muted);line-height:1.65;max-width:520px;font-size:14px}.login-layout{display:grid;grid-template-columns:1fr .85fr;gap:45px;align-items:center}.login-card,.data-card{border:1px solid var(--line);background:linear-gradient(145deg,rgba(15,33,58,.88),rgba(5,12,24,.88));border-radius:22px;padding:28px;box-shadow:0 20px 70px #0005,inset 0 1px rgba(255,255,255,.04)}.card-title{font-size:12px;letter-spacing:.18em;color:var(--muted);margin-bottom:22px}.field-label{display:block;font-size:12px;color:#b9cbe1;margin:18px 0 8px}.input{width:100%;padding:14px 15px;border:1px solid rgba(85,234,255,.25);border-radius:10px;background:#06101f;color:white;font-size:15px;outline:none}.input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #55eaff18}.btn{border:0;border-radius:10px;padding:14px 18px;color:#03111b;background:linear-gradient(100deg,var(--cyan),#88b7ff);font-weight:800;letter-spacing:.04em;cursor:pointer;transition:.2s;box-shadow:0 8px 25px #55eaff20}.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}.full{width:100%;margin-top:20px}.error{color:#ff9eac;font-size:12px;min-height:18px;margin-top:10px}.examples{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.example{border:1px solid rgba(145,169,199,.18);border-radius:10px;padding:12px;background:#ffffff05;cursor:pointer}.example:hover{border-color:var(--cyan)}.example strong{display:block;font-size:12px;color:var(--cyan)}.example span{display:block;color:var(--muted);font-size:11px;margin-top:5px}
+.visual{min-height:360px;display:grid;place-items:center;position:relative}.orbit{position:absolute;width:280px;height:280px;border:1px solid rgba(85,234,255,.14);border-radius:50%;animation:spin 22s linear infinite}.orbit:before,.orbit:after{content:"";position:absolute;border:1px dashed rgba(85,234,255,.2);border-radius:50%;inset:22px}.orbit:after{inset:48px;border-style:solid;opacity:.55}@keyframes spin{to{transform:rotate(360deg)}}.core{width:165px;height:165px;border:1px solid #55eaff60;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#55eaff15,transparent 70%);box-shadow:0 0 60px #55eaff12}.core svg{width:75px;filter:drop-shadow(0 0 9px #55eaff)}.visual-label{position:absolute;bottom:13px;text-align:center;color:var(--muted);font-size:10px;letter-spacing:.18em}
+.scan-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:35px;align-items:center}.scan-box{min-height:430px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:22px;background:linear-gradient(160deg,#0c1b30dd,#050b16dd);position:relative;overflow:hidden}.scan-box:before{content:"";position:absolute;inset:16px;border:1px solid #55eaff14;border-radius:14px;pointer-events:none}.scan-hint{font-size:11px;letter-spacing:.16em;color:var(--muted);margin:15px 0 20px}.hand-button{position:relative;border:1px solid #55eaff55;background:radial-gradient(circle,#1a5172aa,#071323 72%);width:190px;height:220px;border-radius:45% 45% 42% 42%;display:grid;place-items:center;cursor:pointer;transition:.25s;box-shadow:0 0 40px #55eaff12}.hand-button:hover{box-shadow:0 0 45px #55eaff2a;transform:scale(1.02)}.hand-button svg{width:125px;height:155px;filter:drop-shadow(0 0 7px #55eaff88)}.scan-line{position:absolute;left:7%;right:7%;height:3px;top:10%;opacity:0;background:linear-gradient(90deg,transparent,var(--cyan),white,var(--cyan),transparent);box-shadow:0 0 18px var(--cyan)}.scanning .scan-line{opacity:1;animation:scan 1.3s ease-in-out infinite alternate}@keyframes scan{from{top:10%}to{top:87%}}.scanning .hand-button{border-color:var(--cyan);box-shadow:0 0 35px #55eaff44}.scan-progress{height:4px;width:70%;background:#ffffff12;border-radius:10px;overflow:hidden;margin-top:16px}.scan-progress span{display:block;width:0;height:100%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}.scanning .scan-progress span{animation:progress 3s linear forwards}@keyframes progress{to{width:100%}}.scan-status{font-size:11px;color:var(--cyan);letter-spacing:.12em;margin-top:13px;min-height:16px}.right-info{padding:5px 0}.steps{display:flex;gap:8px;margin:25px 0}.step{height:4px;flex:1;background:#ffffff12;border-radius:4px}.step.on{background:var(--cyan);box-shadow:0 0 8px #55eaff55}.note{font-size:12px;color:var(--muted);line-height:1.7;border-left:2px solid #55eaff66;padding-left:14px;margin-top:24px}
+.profile-layout{display:grid;grid-template-columns:.75fr 1.25fr;gap:25px;align-items:stretch}.profile-hero{border:1px solid var(--line);border-radius:22px;padding:28px;background:linear-gradient(155deg,#123354,#07101f 75%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:400px}.avatar{width:130px;height:130px;border-radius:50%;display:grid;place-items:center;font-size:43px;font-weight:700;color:#07111f;background:linear-gradient(145deg,#8cf5ff,#5b8cff);box-shadow:0 0 45px #55eaff25;border:3px solid #d7fcff55}.profile-name{font-size:27px;margin:22px 0 5px}.role{font-size:12px;color:var(--cyan);letter-spacing:.12em}.id-tag{margin-top:22px;padding:7px 11px;border:1px solid var(--line);border-radius:30px;color:var(--muted);font-size:10px;letter-spacing:.12em}.data-card{padding:28px}.data-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}.verified{font-size:10px;color:#5cffbb;border:1px solid #5cffbb55;border-radius:30px;padding:7px 10px;white-space:nowrap}.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.datum{padding:15px;border-radius:12px;background:#ffffff05;border:1px solid #ffffff0c}.datum label{display:block;font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}.datum strong{font-size:14px;font-weight:600}.description{margin-top:12px;padding:16px;border:1px solid #ffffff0c;background:#ffffff05;border-radius:12px;color:#b7c9df;font-size:13px;line-height:1.7}.actions{display:flex;gap:10px;margin-top:20px}.secondary{background:transparent;color:var(--cyan);border:1px solid #55eaff55;box-shadow:none}.success-wrap{text-align:center;max-width:650px;margin:auto;padding:40px 20px}.success-icon{width:100px;height:100px;border:1px solid #5cffbb80;color:#5cffbb;border-radius:50%;display:grid;place-items:center;margin:0 auto 25px;box-shadow:0 0 55px #5cffbb16;background:#5cffbb0b}.success-icon svg{width:48px}.success-title{font-size:clamp(38px,7vw,64px);margin:0 0 12px;letter-spacing:-.04em}.success-text{color:var(--muted);line-height:1.7}.success-details{display:inline-flex;gap:10px;align-items:center;padding:12px 17px;border:1px solid #5cffbb30;border-radius:10px;margin:20px 0 10px;color:#8fffc9;font-size:12px}
+.footer{border-top:1px solid rgba(85,234,255,.12);padding:16px 0 24px;color:#607994;font-size:10px;letter-spacing:.1em;display:flex;justify-content:space-between;gap:12px}.hide{display:none!important}
+@media(max-width:760px){.login-layout,.scan-layout,.profile-layout{grid-template-columns:1fr}.login-layout{gap:25px}.visual{min-height:250px;order:-1}.orbit{width:220px;height:220px}.login-card,.data-card{padding:22px}.scan-box{min-height:390px}.profile-hero{min-height:300px}.topbar{font-size:9px}.brand{font-size:13px}.headline{font-size:37px}.footer{font-size:9px}}
+
+/* CINEMATIC PALM HOLOGRAM */
+
+.scan-fullscreen{position:fixed!important;inset:0;z-index:50;width:100vw!important;height:100vh;min-height:100vh!important;padding:0!important;background:#01050a;overflow:hidden}
+.scan-fullscreen:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,#083047 0%,#04131f 22%,#01070d 57%,#000 100%);}
+.scan-fullscreen:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 42%,rgba(0,0,0,.62) 100%),linear-gradient(180deg,rgba(0,0,0,.3),transparent 20%,transparent 78%,rgba(0,0,0,.7));}
+.scan-topline{position:absolute;z-index:30;top:22px;left:28px;right:28px;display:flex;align-items:center;justify-content:space-between;color:#91a9bb;font:500 9px/1.2 ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase}.scan-topline .live-dot{width:5px;height:5px;margin-right:7px;display:inline-block;border-radius:50%;background:#65ffd2;box-shadow:0 0 14px #65ffd2;animation:live 1.2s infinite}.back-mini{border:0;background:transparent;color:#7b9aaa;font:inherit;letter-spacing:.15em;cursor:pointer}.back-mini:hover{color:#bffcff}
+.scan-stage{position:absolute;inset:0;overflow:hidden;perspective:1200px}
+.room-light{position:absolute;left:50%;top:9%;width:620px;height:420px;transform:translateX(-50%);background:radial-gradient(ellipse,#19b7df12 0%,transparent 66%);filter:blur(12px)}
+.desk{position:absolute;left:-5%;right:-5%;bottom:-8%;height:42%;transform:perspective(650px) rotateX(58deg);transform-origin:bottom;background:linear-gradient(180deg,#07131b,#02070b 42%,#010306);border-top:1px solid #5eeeff20;box-shadow:0 -25px 80px #00d9ff0d inset}
+.desk:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#57dfff12 1px,transparent 1px),linear-gradient(90deg,#57dfff0d 1px,transparent 1px);background-size:70px 70px;mask-image:linear-gradient(180deg,#000,transparent 80%)}
+.desk-reflection{position:absolute;left:50%;bottom:5%;width:520px;height:180px;transform:translateX(-50%);background:radial-gradient(ellipse,#26dfff20,transparent 68%);filter:blur(10px)}
+.emitter{position:absolute;z-index:8;left:50%;bottom:10.5%;width:330px;height:92px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at 50% 45%,#163443,#07131b 56%,#02070a 76%);border:1px solid #6defff30;box-shadow:0 12px 45px #000,0 0 80px #13cce91a,inset 0 0 35px #70efff12}.emitter:before{content:"";position:absolute;inset:14px 26px;border-radius:50%;border:1px solid #65edff55;box-shadow:0 0 22px #55eaff2a,inset 0 0 18px #55eaff15}.emitter:after{content:"PALM / ID";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:600 8px monospace;letter-spacing:.3em;color:#72ddec77}
+.emitter-core{position:absolute;z-index:10;left:50%;bottom:15.8%;width:95px;height:95px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,#b8ffff 0,#52edff 3%,#0b6b82 11%,#05202d 31%,transparent 65%);filter:drop-shadow(0 0 18px #45efff);animation:core 2.4s ease-in-out infinite}
+.scan-grid{position:absolute;z-index:1;left:50%;top:12%;width:900px;height:650px;transform:translateX(-50%) rotateX(58deg);background-image:linear-gradient(#55eaff10 1px,transparent 1px),linear-gradient(90deg,#55eaff10 1px,transparent 1px);background-size:45px 45px;mask-image:radial-gradient(ellipse,#000 15%,transparent 75%);opacity:.7}
+.horizon{position:absolute;z-index:2;left:15%;right:15%;top:42%;height:1px;background:linear-gradient(90deg,transparent,#55eaff35 20%,#9ffaff70 50%,#55eaff35 80%,transparent);box-shadow:0 0 35px #55eaff18}
+.orbit{position:absolute;z-index:3;left:50%;top:44%;border:1px solid #61ecff18;border-radius:50%;transform:translate(-50%,-50%) rotateX(66deg);pointer-events:none}.orbit.a{width:500px;height:210px;animation:orbit 22s linear infinite}.orbit.b{width:690px;height:290px;border-style:dashed;animation:orbit 30s linear infinite reverse}.orbit.c{width:820px;height:350px;border-color:#668eff10;animation:orbit 40s linear infinite}
+.hand-rig{position:absolute;z-index:12;left:50%;top:44%;width:390px;height:560px;transform:translate(-50%,-50%);cursor:pointer;filter:drop-shadow(0 0 26px #52efff35)}
+.hand-haze{position:absolute;inset:-15%;background:radial-gradient(ellipse at 50% 50%,#40efff1c,transparent 60%);filter:blur(28px);animation:haze 3s ease-in-out infinite}
+.hand-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.hand-fill{fill:url(#handFill);stroke:#8ef8ffb5;stroke-width:1.1;vector-effect:non-scaling-stroke;filter:url(#softGlow)}
+.hand-contour{fill:none;stroke:#7bf7ff55;stroke-width:.9;vector-effect:non-scaling-stroke}.hand-vein{fill:none;stroke:#9dffff70;stroke-width:.7;vector-effect:non-scaling-stroke;stroke-linecap:round}.hand-node{fill:#c8ffff;filter:url(#dotGlow)}
+.scan-plane{position:absolute;z-index:18;left:-80px;right:-80px;top:23%;height:3px;background:linear-gradient(90deg,transparent,#4fffe4 18%,#fff 50%,#4fffe4 82%,transparent);box-shadow:0 0 12px #55eaff,0 0 55px #55eaff,0 0 120px #55eaff55;opacity:.18}.scanning .scan-plane{opacity:1;animation:sweep 2.6s cubic-bezier(.4,0,.2,1) infinite}
+.scan-volume{position:absolute;z-index:15;left:0;right:0;top:0;height:100%;pointer-events:none;overflow:hidden}.scan-volume i{position:absolute;width:2px;height:2px;background:#aaffff;border-radius:50%;box-shadow:0 0 8px #55eaff;opacity:.6;animation:floatUp linear infinite}.scan-volume i:nth-child(1){left:48%;top:70%;animation-duration:4s}.scan-volume i:nth-child(2){left:42%;top:64%;animation-duration:5s}.scan-volume i:nth-child(3){left:56%;top:68%;animation-duration:4.5s}.scan-volume i:nth-child(4){left:37%;top:75%;animation-duration:6s}.scan-volume i:nth-child(5){left:63%;top:72%;animation-duration:5.5s}.scan-volume i:nth-child(6){left:52%;top:62%;animation-duration:4.2s}
+.hud{position:absolute;z-index:25;top:50%;width:220px;transform:translateY(-50%);font:500 9px/1.4 ui-monospace,monospace;letter-spacing:.12em;color:#7893a5}.hud-left{left:5vw}.hud-right{right:5vw}.hud-block{padding:14px 0;border-top:1px solid #58eaff28}.hud-block:last-child{border-bottom:1px solid #58eaff18}.hud-label{font-size:8px;color:#6f8998;letter-spacing:.2em;margin-bottom:7px}.hud-value{font-size:13px;color:#d8faff;letter-spacing:.08em}.hud-value.cyan{color:#67efff}.hud-bar{height:1px;margin-top:9px;background:linear-gradient(90deg,#58efff 0 68%,#58efff12 68%)}.hud-micro{margin-top:7px;color:#56717e;font-size:7px}.hud-bracket{position:absolute;width:35px;height:35px;border-color:#5cecff45;border-style:solid}.hud-bracket.tl{top:-8px;left:-8px;border-width:1px 0 0 1px}.hud-bracket.br{bottom:-8px;right:-8px;border-width:0 1px 1px 0}
+.readout{position:absolute;z-index:28;left:50%;bottom:19%;transform:translateX(-50%);text-align:center;font:500 9px/1.3 ui-monospace,monospace;letter-spacing:.28em;color:#7fa2b0}.readout strong{display:block;margin-bottom:7px;color:#d8fbff;font-size:10px}.readout .percent{font-size:28px;letter-spacing:.08em;color:#b8ffff;text-shadow:0 0 18px #55eaff66}.readout .status{margin-top:6px;color:#62e9ff}.progress{width:260px;height:1px;margin:9px auto 0;background:#55eaff12;overflow:hidden}.progress span{display:block;width:0;height:100%;background:#8fffff;box-shadow:0 0 12px #55eaff;transition:width .15s}
+.bottom-note{position:absolute;z-index:28;left:50%;bottom:28px;transform:translateX(-50%);font:500 7px monospace;letter-spacing:.28em;color:#486472;text-align:center;white-space:nowrap}.bottom-note b{color:#74eaff66;font-weight:500}
+.corner{position:absolute;z-index:29;width:28px;height:28px;border-color:#65eaff55;border-style:solid}.corner.tl{top:70px;left:30px;border-width:1px 0 0 1px}.corner.tr{top:70px;right:30px;border-width:1px 1px 0 0}.corner.bl{bottom:26px;left:30px;border-width:0 0 1px 1px}.corner.br{bottom:26px;right:30px;border-width:0 1px 1px 0}
+@keyframes sweep{0%{top:18%;opacity:.1}15%{opacity:1}50%{opacity:1}85%{opacity:1}100%{top:75%;opacity:.08}}@keyframes orbit{to{transform:translate(-50%,-50%) rotateX(66deg) rotateZ(360deg)}}@keyframes haze{50%{transform:scale(1.08);opacity:.8}}@keyframes breathe{50%{transform:scale(1.04);opacity:.9}}@keyframes core{50%{transform:translateX(-50%) scale(1.12);filter:drop-shadow(0 0 28px #45efff)}}@keyframes live{50%{opacity:.25;box-shadow:0 0 4px #65ffd2}}@keyframes floatUp{0%{transform:translateY(80px) scale(.3);opacity:0}20%{opacity:.7}100%{transform:translateY(-160px) scale(1.1);opacity:0}}
+.scanning .hand-fill{animation:handPulse .9s ease-in-out infinite}.scanning .hand-contour{stroke:#9dffff88}.scanning .hand-vein{animation:vein 1.1s ease-in-out infinite}.scanning .emitter-core{animation:core .8s ease-in-out infinite}.scanning .scan-volume i{animation-duration:2s}@keyframes handPulse{50%{fill:url(#handFillHot)}}@keyframes vein{50%{stroke:#d6ffffc0}}
+@media(max-width:1000px){.hud{width:170px}.hud-left{left:2vw}.hud-right{right:2vw}.hand-rig{transform:translate(-50%,-50%) scale(.85)}}
+@media(max-width:720px){.hud{display:none}.hand-rig{transform:translate(-50%,-50%) scale(.68)}.readout{bottom:20%}.bottom-note{font-size:6px}.desk{height:34%}.emitter{bottom:8%;transform:translateX(-50%) scale(.8)}.emitter-core{bottom:14%}}
+
+/* V4 FILM REALISM */
+.scan-fullscreen{background:#02060a!important;perspective:1400px}.scan-stage{background:radial-gradient(ellipse at 50% 38%,rgba(20,92,118,.28),transparent 28%),linear-gradient(180deg,#02070d 0%,#02080e 56%,#000 100%)!important;border:0!important;border-radius:0!important;max-width:none!important;height:100vh!important;min-height:700px!important;overflow:hidden!important}.scan-stage:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,transparent 25%,rgba(0,0,0,.38) 70%,#000 100%);z-index:15;pointer-events:none}.scan-stage:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 4px);mix-blend-mode:screen;opacity:.35;z-index:16;pointer-events:none}.room-light{position:absolute!important;left:50%!important;top:8%!important;width:45vw!important;height:48vh!important;transform:translateX(-50%)!important;background:radial-gradient(ellipse,rgba(46,229,255,.12),transparent 68%)!important;filter:blur(10px)!important;z-index:1}.scan-grid{top:58%!important;height:50%!important;transform:perspective(420px) rotateX(62deg) scale(1.5)!important;transform-origin:top!important;opacity:.28!important;background-size:55px 55px!important;mask-image:linear-gradient(to bottom,#000,transparent)!important}.horizon{position:absolute;z-index:2;left:0;right:0;top:58%;height:1px;background:linear-gradient(90deg,transparent,#36e9ff66,transparent);box-shadow:0 0 35px #36e9ff44}.desk{position:absolute!important;z-index:4!important;left:-5%;right:-5%;bottom:-4%;height:38%;transform:perspective(700px) rotateX(58deg);transform-origin:bottom;background:linear-gradient(180deg,#07131b,#020609 45%,#000);border-top:1px solid #55eaff25;box-shadow:0 -20px 80px #000 inset,0 -2px 25px #55eaff12}.desk:before{content:"";position:absolute;left:20%;right:20%;top:5%;height:70%;background:radial-gradient(ellipse,#0c5264aa,transparent 62%);filter:blur(16px)}.desk-reflection{z-index:5!important;bottom:4%!important;left:34%!important;width:32%!important;height:24%!important;background:radial-gradient(ellipse,#55eaff18,transparent 68%)!important;filter:blur(8px)!important}.emitter{z-index:8!important;bottom:11%!important;left:50%!important;width:300px!important;height:75px!important;transform:translateX(-50%) perspective(500px) rotateX(55deg)!important;border-radius:50%!important;background:radial-gradient(ellipse,#071e29,#02080c 68%)!important;border:1px solid #55eaff55!important;box-shadow:0 0 35px #55eaff16,inset 0 0 30px #55eaff20!important}.emitter:before{content:"PALM / ID";position:absolute;inset:17px;text-align:center;font:600 9px/40px Arial;letter-spacing:.5em;color:#55eaff55;border:1px solid #55eaff22;border-radius:50%}.emitter-core{z-index:9!important;bottom:16%!important;left:50%!important;width:42px!important;height:42px!important;transform:translateX(-50%)!important;border-radius:50%!important;background:radial-gradient(circle,#dfffff 0,#55eaff 12%,#008aa7 28%,transparent 72%)!important;box-shadow:0 0 35px #55eaffaa,0 -8px 55px #55eaff55!important}.hand-rig{z-index:10!important;left:50%!important;top:18%!important;width:420px!important;height:560px!important;transform:translateX(-50%) rotateX(2deg)!important;filter:drop-shadow(0 0 5px #7fffff) drop-shadow(0 0 24px #00d9ff55)!important}.hand-svg{width:100%!important;height:100%!important}.hand-fill{fill:url(#handFill)!important;stroke:#8fffff!important;stroke-width:1.1!important;opacity:.62}.hand-contour,.hand-vein{stroke:#65f5ff!important;stroke-width:1!important;opacity:.8;stroke-dasharray:5 5;animation:flowLines 5s linear infinite}.hand-vein{opacity:.52;stroke-width:.8;stroke-dasharray:2 8;animation-duration:8s}.hand-node{fill:#e9ffff!important;filter:url(#dotGlow);animation:nodePulse 1.7s ease-in-out infinite alternate}.scan-plane{position:absolute;left:-18%;right:-18%;top:48%;height:3px;background:linear-gradient(90deg,transparent,#dfffff,#42ecff,#dfffff,transparent);box-shadow:0 0 12px #fff,0 0 35px #00eaff,0 0 90px #00eaff;opacity:.7;animation:planeSweep 3.2s ease-in-out infinite}.scanning .scan-plane{animation-duration:1.05s;opacity:1}.scan-volume{z-index:7!important;left:50%!important;top:20%!important;width:390px!important;height:530px!important;transform:translateX(-50%)!important;border:1px solid #55eaff13!important;border-radius:48%!important}.scan-volume i{background:#8ffaff!important;box-shadow:0 0 8px #55eaff!important}.orbit.a{width:470px!important;height:470px!important;top:49%!important}.orbit.b{width:620px!important;height:620px!important;top:49%!important}.orbit.c{width:800px!important;height:800px!important;top:49%!important}.scan-topline{z-index:20!important;background:linear-gradient(180deg,#0008,transparent)!important;border:0!important}.hud{z-index:20!important;top:30%!important;background:linear-gradient(90deg,rgba(3,16,25,.65),rgba(3,16,25,.12))!important;border:0!important;border-left:1px solid #55eaff40!important;border-radius:0!important;backdrop-filter:blur(4px)!important}.hud-right{background:linear-gradient(270deg,rgba(3,16,25,.65),rgba(3,16,25,.12))!important;border-left:0!important;border-right:1px solid #55eaff40!important}.readout{z-index:22!important;bottom:13%!important;background:transparent!important;border:0!important;box-shadow:none!important;text-shadow:0 0 12px #55eaff99}.readout .percent{font-size:clamp(30px,4vw,58px)!important;font-weight:300!important}.progress{width:260px!important}.bottom-note{z-index:22!important;bottom:4%!important}.corner{z-index:21!important}@keyframes planeSweep{0%,100%{top:10%;opacity:.25}50%{top:88%;opacity:1}}@keyframes flowLines{to{stroke-dashoffset:-80}}@keyframes nodePulse{from{opacity:.25}to{opacity:1}}@media(max-width:800px){.hand-rig{top:17%;transform:translateX(-50%) scale(.72)}.emitter{bottom:10%;width:220px}.hud{display:none}}
+/* EVENT OPENING MODE */
+.success-event{position:relative;min-height:calc(100vh - 120px);display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 45%,#083548 0%,#020a11 28%,#010306 72%,#000 100%);text-align:center}
+.success-event:before{content:"";position:absolute;inset:-20%;background:conic-gradient(from 0deg,transparent 0 18%,#55eaff12 22%,transparent 28% 48%,#8b7bff10 53%,transparent 60% 100%);animation:heroSpin 18s linear infinite}
+.success-event:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,transparent 0 22%,rgba(0,0,0,.25) 48%,#000 90%);pointer-events:none}
+.event-ring{position:absolute;width:min(58vw,700px);aspect-ratio:1;border:1px solid #55eaff2a;border-radius:50%;box-shadow:0 0 100px #55eaff12,inset 0 0 80px #55eaff0c;animation:ringPulse 3s ease-in-out infinite}
+.event-ring:before,.event-ring:after{content:"";position:absolute;inset:8%;border:1px dashed #55eaff20;border-radius:50%}.event-ring:after{inset:22%;border-style:solid;opacity:.5}
+.event-content{position:relative;z-index:3;transform:translateY(-2vh)}.event-kicker{font:500 10px/1 monospace;letter-spacing:.55em;color:#6cecff;margin-bottom:22px;text-shadow:0 0 18px #55eaff}.event-title{font:300 clamp(58px,9vw,145px)/.85 Arial,sans-serif;letter-spacing:-.06em;color:#eaffff;text-shadow:0 0 30px #55eaff66,0 0 90px #55eaff22;margin:0}.event-title span{color:#55eaff}.event-sub{margin-top:25px;font:500 12px/1.6 monospace;letter-spacing:.42em;color:#8ba9b7}.event-line{width:min(420px,60vw);height:1px;margin:28px auto;background:linear-gradient(90deg,transparent,#55eaff,transparent);box-shadow:0 0 20px #55eaff}
+.event-particles{position:absolute;inset:0;z-index:2;overflow:hidden}.event-particles i{position:absolute;width:2px;height:2px;background:#dfffff;border-radius:50%;box-shadow:0 0 10px #55eaff;animation:particleRise linear infinite}.event-particles i:nth-child(1){left:12%;bottom:-5%;animation-duration:5s}.event-particles i:nth-child(2){left:23%;bottom:-8%;animation-duration:7s;animation-delay:1s}.event-particles i:nth-child(3){left:37%;bottom:-4%;animation-duration:6s;animation-delay:2s}.event-particles i:nth-child(4){left:51%;bottom:-7%;animation-duration:8s;animation-delay:.5s}.event-particles i:nth-child(5){left:67%;bottom:-5%;animation-duration:6.5s;animation-delay:1.5s}.event-particles i:nth-child(6){left:81%;bottom:-6%;animation-duration:7.5s;animation-delay:2.2s}.event-particles i:nth-child(7){left:90%;bottom:-5%;animation-duration:5.8s;animation-delay:1.2s}
+@keyframes heroSpin{to{transform:rotate(360deg)}}@keyframes ringPulse{50%{transform:scale(1.035);box-shadow:0 0 140px #55eaff20,inset 0 0 110px #55eaff12}}@keyframes particleRise{0%{transform:translateY(0) scale(.4);opacity:0}15%{opacity:.8}100%{transform:translateY(-105vh) scale(1.8);opacity:0}}
+
+</style>
+
+<style id="final-holo-polish">
+/* Hand is intentionally imperfect: broken scan contours + drifting hologram particles */
+.hand-rig{transform:translateX(-50%) rotateX(2deg) rotateZ(-.7deg)!important;opacity:.92}
+.hand-fill{fill:url(#palmGlass)!important;opacity:.16!important;stroke:#9fffff!important;stroke-dasharray:2 4 9 3!important;filter:url(#hologramGlow)!important}
+.hand-contour{stroke-dasharray:1 6 8 3!important;opacity:.72!important;mix-blend-mode:screen}
+.hand-vein{stroke-dasharray:1 11 3 7!important;opacity:.48!important}
+.hand-rig:before,.hand-rig:after{content:"";position:absolute;inset:4% 7%;pointer-events:none;border-radius:45%;background:repeating-linear-gradient(173deg,transparent 0 13px,#9fffff12 14px,#9fffff12 15px,transparent 16px 28px);mask-image:radial-gradient(ellipse,#000 35%,transparent 74%);animation:holoDrift 7s linear infinite}
+.hand-rig:after{background:radial-gradient(circle at 22% 28%,#dfffff 0 1px,transparent 2px),radial-gradient(circle at 74% 41%,#8fffff 0 1px,transparent 2px),radial-gradient(circle at 58% 78%,#8fffff 0 1px,transparent 2px);background-size:130px 150px,170px 170px,190px 180px;opacity:.5;animation:holoFlicker 1.9s steps(2) infinite}
+.scanning .hand-rig{animation:handHoloBreath 1.8s ease-in-out infinite}
+@keyframes holoDrift{to{transform:translateY(22px)}}
+@keyframes holoFlicker{50%{opacity:.15;transform:translateX(7px)}}
+@keyframes handHoloBreath{50%{filter:drop-shadow(0 0 10px #7fffff) drop-shadow(0 0 38px #00d9ff88);transform:translateX(-50%) rotateX(2deg) rotateZ(.35deg) translateY(-4px)}}
+.event-content{animation:eventReveal 1.4s cubic-bezier(.16,1,.3,1) both}
+.event-title{letter-spacing:.14em;text-shadow:0 0 10px #bfffff,0 0 45px #00dfff88}
+.event-sub{letter-spacing:.28em}
+.event-kicker{letter-spacing:.34em}
+.event-line{box-shadow:0 0 18px #5ff7ff,0 0 55px #00dfff88}
+@keyframes eventReveal{from{opacity:0;transform:scale(.92);filter:blur(12px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+</style>
+
+<style id="palm-wow-upgrade">
+/* Sharper, more legible palm anatomy and a layered volumetric scan */
+.hand-rig{width:440px!important;height:570px!important;filter:drop-shadow(0 0 7px #b8ffff) drop-shadow(0 0 26px #00d9ff77)!important}
+.hand-fill{opacity:.28!important;stroke-width:1.45!important;stroke-dasharray:none!important}
+.hand-contour{stroke:#9bffff!important;stroke-width:1.05!important;stroke-dasharray:2 3!important;opacity:.92!important}
+.hand-vein{stroke:#c3ffff!important;stroke-width:.9!important;stroke-dasharray:3 5!important;opacity:.74!important}
+.palm-detail{filter:drop-shadow(0 0 4px #69f8ff);animation:creaseShimmer 3s ease-in-out infinite}
+.finger-scan-points{filter:drop-shadow(0 0 7px #fff);animation:fingertipGlow 1.8s ease-in-out infinite alternate}
+.hand-rig:before{background:repeating-linear-gradient(180deg,transparent 0 7px,#a9ffff18 8px,#a9ffff18 9px,transparent 10px 17px)!important;animation:holoDrift 3.5s linear infinite!important}
+.scan-plane{height:4px!important;background:linear-gradient(90deg,transparent,#58ffe5 12%,#fff 50%,#7b8dff 88%,transparent)!important;box-shadow:0 0 18px #fff,0 0 48px #00eaff,0 0 110px #00eaff99!important}
+.scanning .scan-plane{animation:planeSweep .78s cubic-bezier(.4,0,.2,1) infinite!important}
+.scanning .hand-fill{opacity:.48!important;filter:url(#hologramGlow) drop-shadow(0 0 8px #52faff)!important}
+.scanning .hand-contour{stroke:#efffff!important;stroke-width:1.25!important}
+.scanning .palm-detail{stroke:#fff!important;animation:creaseShimmer .55s ease-in-out infinite}
+.scanning .scan-volume{border-color:#66f7ff45!important;box-shadow:inset 0 0 45px #19eaff10,0 0 35px #16dfff13}
+.scanning .orbit.a{border-color:#8fffff88!important}
+.scanning .orbit.b{border-color:#8b9dff55!important}
+.scanning .readout .percent{text-shadow:0 0 12px #fff,0 0 36px #00eaff!important}
+@keyframes creaseShimmer{0%,100%{opacity:.48}50%{opacity:1}}
+@keyframes fingertipGlow{from{opacity:.45}to{opacity:1}}
+/* A full celebratory finish: prismatic rays, fireworks, confetti and a radiant title */
+.success-event{isolation:isolate;background:radial-gradient(ellipse at 50% 42%,#0d6681 0%,#09263d 22%,#080b22 48%,#010208 82%,#000 100%)!important}
+.success-event:before{background:conic-gradient(from 0deg,transparent 0 8%,#55eaff25 10%,transparent 14% 23%,#ff4fd81c 27%,transparent 31% 43%,#ffe66d20 47%,transparent 52% 65%,#7c69ff22 70%,transparent 75% 100%)!important;animation:heroSpin 9s linear infinite!important}
+.event-ring{border-color:#8dfbff70!important;box-shadow:0 0 35px #55eaff33,0 0 120px #55eaff2c,inset 0 0 100px #55eaff15!important}
+.event-ring:before{border-color:#8fffff70!important;animation:ringDash 16s linear infinite}
+.event-ring:after{border-color:#ffdbff55!important;box-shadow:0 0 45px #b27aff22}
+.event-title{font-weight:800!important;font-size:clamp(44px,8vw,118px)!important;letter-spacing:.025em!important;background:linear-gradient(100deg,#fff 5%,#79f8ff 28%,#fff 44%,#ffd8fb 61%,#ffe98a 78%,#fff 95%);background-size:220% auto;background-clip:text;-webkit-background-clip:text;color:transparent!important;filter:drop-shadow(0 0 20px #48eaff88);animation:titlePrism 3s linear infinite!important}
+.event-title span{color:transparent!important;background:linear-gradient(90deg,#fff4ad,#ff82d8,#9afaff,#fff4ad);background-clip:text;-webkit-background-clip:text}
+.event-kicker{color:#b7fbff!important;text-shadow:0 0 18px #55eaff,0 0 38px #ff55d8!important}
+.event-sub{color:#d8faff!important;text-shadow:0 0 15px #55eaff66}
+.event-line{height:2px!important;background:linear-gradient(90deg,transparent,#67faff,#fff,#ff8be8,#ffe88a,transparent)!important;box-shadow:0 0 20px #5ff7ff,0 0 65px #ff6ad9aa!important}
+.celebration-burst{position:absolute;z-index:2;width:clamp(110px,19vw,240px);aspect-ratio:1;border-radius:50%;pointer-events:none;opacity:0;background:repeating-conic-gradient(from 0deg,#fff 0deg 1deg,transparent 2deg 15deg);mask-image:radial-gradient(circle,transparent 0 8%,#000 12% 15%,transparent 17% 28%,#000 31% 33%,transparent 36% 100%);filter:drop-shadow(0 0 12px #55eaff)}
+.burst-one{left:12%;top:17%;animation:firework 3.4s ease-out infinite}
+.burst-two{right:10%;top:22%;filter:hue-rotate(95deg) drop-shadow(0 0 12px #ff64dc);animation:firework 3.8s 1.1s ease-out infinite}
+.confetti-layer{position:absolute;inset:0;z-index:4;overflow:hidden;pointer-events:none}
+.confetti-piece{position:absolute;top:-12px;width:6px;height:12px;border-radius:2px;opacity:0;animation:confettiFall var(--fall,4s) var(--delay,0s) linear infinite;box-shadow:0 0 8px currentColor}
+@keyframes firework{0%{transform:scale(.12) rotate(0);opacity:0}12%{opacity:.9}65%{opacity:.65}100%{transform:scale(1.7) rotate(40deg);opacity:0}}
+@keyframes ringDash{to{transform:rotate(360deg)}}
+@keyframes titlePrism{to{background-position:220% center}}
+@keyframes confettiFall{0%{transform:translate3d(0,-3vh,0) rotate(0deg);opacity:0}8%{opacity:1}85%{opacity:.95}100%{transform:translate3d(var(--drift,40px),110vh,0) rotate(900deg);opacity:0}}
+@media(max-width:800px){.hand-rig{width:390px!important;height:520px!important;top:17%!important;transform:translateX(-50%) scale(.72)!important}.burst-one{left:0}.burst-two{right:0}.event-title{letter-spacing:0!important}}
+@media(prefers-reduced-motion:reduce){.palm-detail,.finger-scan-points,.celebration-burst,.confetti-piece,.event-title{animation-duration:12s!important}}
+/* FINAL PASS: clearer palm anatomy, a timed scan, and a true full-screen ending */
+.hand-rig{width:470px!important;height:590px!important;top:19%!important;filter:drop-shadow(0 0 8px #d8ffff) drop-shadow(0 0 30px #00d9ff99)!important}
+.hand-fill{fill:url(#palmGlass)!important;opacity:.34!important;stroke:#e0ffff!important;stroke-width:1.35!important}
+.hand-contour{stroke:#aaffff!important;stroke-width:1.05!important;stroke-dasharray:none!important;opacity:.86!important}
+.hand-vein{stroke:#d5ffff!important;stroke-width:.82!important;stroke-dasharray:2 4!important;opacity:.68!important}
+.palm-anatomy{stroke:#dcffff;filter:drop-shadow(0 0 3px #61efff);opacity:.9;animation:anatomyGlow 3s ease-in-out infinite}
+.scanning .palm-anatomy{stroke:#fff!important;opacity:1;filter:drop-shadow(0 0 7px #fff) drop-shadow(0 0 15px #4cf4ff)}
+.hand-rig:before{background:repeating-linear-gradient(180deg,transparent 0 11px,#baffff12 12px,#baffff12 13px,transparent 14px 24px)!important}
+.scanning .hand-rig{animation:handHoloBreath 1.3s ease-in-out infinite}
+#success.screen.active{position:fixed!important;inset:0!important;z-index:9999!important;width:100vw!important;height:100vh!important;min-height:100vh!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#000!important;display:block!important}
+#success .success-event{position:absolute!important;inset:0!important;width:100vw!important;height:100vh!important;min-height:100vh!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:0!important}
+#success .event-content{width:min(1100px,94vw);padding:20px}
+#success .event-ring{width:min(78vw,900px)}
+#success .confetti-layer{position:absolute!important;inset:0!important}
+@keyframes anatomyGlow{50%{opacity:.58;filter:drop-shadow(0 0 6px #8fffff)}}
+@media(max-width:800px){.hand-rig{width:430px!important;height:550px!important;top:17%!important;transform:translateX(-50%) scale(.78)!important}#success .event-ring{width:110vw}}
+</style>
+
+
+<style id="success-title-size-fix">
+/* Only reduce the title on the final celebration screen */
+#success .event-title{font-size:clamp(24px,4vw,58px)!important;line-height:1.08!important;letter-spacing:.01em!important;max-width:900px!important;margin-inline:auto!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="topbar"><div class="brand">◈ PALM<span style="color:white">/</span>ID</div><div class="status"><span class="dot"></span><span>SYSTEM ONLINE</span></div><div>BIOMETRIC INTERFACE v1.0</div></header>
+<main>
+<section class="screen active" id="login">
+ <div class="login-layout">
+  <div><div class="eyebrow">IDENTITY ACCESS PROTOCOL</div><h1 class="headline">Admin Identity<br><span style="color:var(--cyan)">Dalam satu sentuhan.</span></h1><p class="sub">Identitas yang salah akan dianggap penyusupan, maka kita akan memberikan pembalasan yang lebih dari kata "setimpal"</p>
+   <div class="examples"><div class="example" onclick="useDemo('person1')"><strong>Ka. Mabigus</strong><span>Bapak AJI ISMOYO, S.Sos</span></div><div class="example" onclick="useDemo('person2')"><strong>Ketua Gugus Depan</strong><span>Bapak NUR AHMAD AROFIQ, S.Pd</span></div></div>
+  </div>
+  <div class="login-card"><div class="card-title">01 / AUTHENTICATION</div><label class="field-label" for="username">USERNAME / PERSON ID</label><input class="input" id="username" placeholder="Contoh: person1" autocomplete="off"><div class="error" id="loginError"></div><button class="btn full" onclick="loginUser()">AKSES SISTEM ↗</button><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:18px">Demo lokal. Gunakan <span style="color:var(--cyan)">person1</span> atau <span style="color:var(--cyan)">person2</span>. Tidak memerlukan kata sandi.</p></div>
+ </div>
+ <div class="visual"><div class="orbit"></div><div class="core"><svg viewBox="0 0 100 100" fill="none" stroke="#55eaff" stroke-width="1.5"><path d="M50 8v15M50 77v15M8 50h15M77 50h15"/><circle cx="50" cy="50" r="29"/><circle cx="50" cy="50" r="20" stroke-dasharray="3 5"/><path d="M38 52l8 8 17-21"/></svg></div><div class="visual-label">SECURE IDENTITY NETWORK · READY</div></div>
+</section>
+<section class="screen scan-fullscreen" id="scan">
+  <div class="scan-stage" id="scanBox">
+    <div class="room-light"></div><div class="scan-grid"></div><div class="horizon"></div>
+    <div class="orbit a"></div><div class="orbit b"></div><div class="orbit c"></div>
+    <div class="desk"></div><div class="desk-reflection"></div>
+    <div class="emitter"></div><div class="emitter-core"></div>
+    <div class="scan-volume"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="scan-topline"><button class="back-mini" onclick="showScreen('login')">← EXIT</button><div><span class="live-dot"></span> VERIFY AUTHENTICATION / LIVE</div><div id="scanUserLabel">SUBJECT: PERSON1</div></div>
+    <div class="hud hud-left">
+      <div class="hud-bracket tl"></div><div class="hud-bracket br"></div>
+      <div class="hud-block"><div class="hud-label">BIOMETRIC TARGET</div><div class="hud-value" id="scanDataId">PERSON1</div><div class="hud-micro">HAND GEOMETRY / PALMAR SURFACE</div></div>
+      <div class="hud-block"><div class="hud-label">IDENTITY MATCH</div><div class="hud-value cyan" id="scanDataName">AJI ISMOYO, S.Sos</div><div class="hud-bar"></div></div>
+      <div class="hud-block"><div class="hud-label">VECTOR STATE</div><div class="hud-value" id="vectorState">STANDBY</div><div class="hud-micro">ENCRYPTED SIGNATURE CHANNEL</div></div>
+    </div>
+    <div class="hud hud-right">
+      <div class="hud-bracket tl"></div><div class="hud-bracket br"></div>
+      <div class="hud-block"><div class="hud-label">PALM PROFILE</div><div class="hud-value" id="scanDataAge">55 TAHUN</div><div class="hud-micro" id="scanDataJob">KEPALA SEKOLAH SMK ALHUSAIN KELING</div></div>
+      <div class="hud-block"><div class="hud-label">BIOMETRIC LINK</div><div class="hud-value cyan" id="scanLink">WAITING</div><div class="hud-micro">NO DATA STORED / DEMO</div></div>
+      <div class="hud-block"><div class="hud-label">MATCH CONFIDENCE</div><div class="hud-value" id="scanMatch">0%</div><div class="hud-bar" id="confidenceBar"></div></div>
+    </div>
+    <div class="hand-rig" id="handButton" onclick="startScan()" role="button" tabindex="0" aria-label="scan untuk memulai verifikasi">
+      <div class="hand-haze"></div>
+      <svg class="hand-svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="palmGlass" x1="210" y1="60" x2="210" y2="530" gradientUnits="userSpaceOnUse"><stop stop-color="#d9ffff" stop-opacity=".42"/><stop offset=".48" stop-color="#39eaff" stop-opacity=".18"/><stop offset="1" stop-color="#0a8fa8" stop-opacity=".06"/></linearGradient>
+          <filter id="hologramGlow"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- more natural palm silhouette -->
+        <path class="hand-fill" d="M116 452C98 431 88 401 90 370L95 316C96 302 92 290 84 278L67 253C59 241 61 226 72 218C83 209 98 211 107 222L131 251L132 111C132 92 144 79 160 79C176 79 187 91 187 110L188 226L190 70C190 50 203 37 219 37C236 37 247 50 247 69L246 226L253 85C254 66 267 54 283 55C300 56 311 69 310 88L306 232L318 111C320 92 333 80 349 82C365 84 376 98 374 117L363 268C361 289 365 305 374 323L386 347C401 378 398 411 383 439C364 474 331 499 292 511C248 524 202 519 165 497C145 485 129 470 116 452Z" fill="url(#palmGlass)"/>
+        <path class="hand-contour" d="M116 452C104 429 101 402 103 372L108 318C110 300 105 284 96 270L76 244M145 477C137 448 137 414 139 380L142 251L145 111M180 497C176 463 177 424 178 385L180 72M216 508C214 468 215 429 216 389L218 70M252 510C252 471 255 432 258 394L270 86M288 503C294 470 300 436 302 401L315 113M323 486C345 460 355 428 354 395L360 120"/>
+<path class="hand-vein" d="M111 342C139 326 166 318 196 320C226 322 252 332 278 348C304 364 326 381 355 389M107 369C138 352 169 348 198 354C229 360 251 373 273 391C294 409 310 426 330 440M117 399C145 384 173 383 199 391C225 399 243 413 258 432M134 429C158 418 181 420 202 429C222 438 234 451 244 466M139 286C155 268 174 257 195 255C218 253 238 260 257 274M148 252C164 233 182 222 202 219M247 252C265 234 286 225 306 228M304 266C322 250 340 246 358 251M180 385L180 463M198 354L199 429M258 394L244 466M302 401L330 440"/>
+<g class="hand-node">
+          <circle cx="210" cy="306" r="3"/><circle cx="214" cy="342" r="2.5"/><circle cx="216" cy="424" r="2.5"/><circle cx="250" cy="394" r="3"/><circle cx="286" cy="437" r="2.5"/><circle cx="207" cy="248" r="2.5"/><circle cx="279" cy="277" r="2.5"/>
+        </g>
+        <path d="M108 468L90 486M108 468L128 488M350 476L369 493M350 476L329 495" stroke="#9dffff" stroke-opacity=".38"/>
+        <!-- Refined palm creases and fingertip ridge arcs -->
+        <g class="palm-detail" fill="none" stroke="#c8ffff" stroke-linecap="round">
+          <path d="M132 154 C143 143 158 141 174 151 M190 112 C204 101 228 101 243 113 M254 125 C267 114 288 116 302 130 M315 151 C329 143 348 149 357 164" opacity=".75" stroke-width="1.4"/>
+          <path d="M128 286 C151 270 174 267 198 273 C224 280 246 295 267 313 C287 329 308 342 333 348" opacity=".85" stroke-width="1.5"/>
+          <path d="M118 350 C145 334 171 330 196 336 C222 342 245 358 264 377" opacity=".8" stroke-width="1.6"/>
+          <path d="M124 386 C149 371 174 370 197 378 C218 385 235 400 248 418" opacity=".72" stroke-width="1.3"/>
+          <path d="M146 440 C165 430 185 434 202 444 C215 452 224 463 230 474" opacity=".65" stroke-width="1.2"/>
+          <path d="M154 182 Q158 195 154 211 M207 142 Q211 157 207 173 M278 159 Q282 174 278 190 M335 184 Q339 198 335 214" opacity=".42" stroke-width=".9"/>
+        </g>
+        <g class="palm-anatomy" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M119 303C133 291 148 289 162 296M121 317C139 306 154 306 168 312M287 302C303 295 319 301 330 313M296 317C311 312 324 319 337 330" stroke="#d9ffff" stroke-opacity=".58" stroke-width="1.1"/>
+          <path d="M121 345C143 330 166 326 189 333M120 354C143 341 165 339 187 345M126 390C148 377 169 376 190 384M132 400C153 389 172 389 190 397M155 444C170 438 185 443 198 452" stroke="#efffff" stroke-opacity=".5" stroke-width=".85"/>
+          <path d="M139 97C146 88 158 85 169 91M198 57C208 48 225 49 236 59M263 75C273 66 288 69 296 80M329 101C338 94 351 98 358 108" stroke="#eaffff" stroke-opacity=".7" stroke-width=".9"/>
+          <path d="M108 275C119 267 131 267 140 275M112 284C122 278 132 279 140 286M147 265C160 251 178 246 194 249M221 246C238 248 251 258 263 270M273 277C288 266 305 266 319 278" stroke="#8fffff" stroke-opacity=".7" stroke-width=".9"/>
+          <path d="M126 414C139 433 154 448 174 460M287 454C307 442 325 424 336 404M164 478C192 493 226 498 254 490M145 466C157 476 169 484 181 489" stroke="#caffff" stroke-opacity=".42" stroke-width="1"/>
+          <path d="M150 105q8 -7 16 0M150 111q8 -7 16 0M205 62q10 -8 20 0M205 69q10 -8 20 0M270 80q9 -7 18 0M270 87q9 -7 18 0M336 108q8 -6 16 0M336 115q8 -6 16 0" stroke="#efffff" stroke-opacity=".58" stroke-width=".75"/>
+        </g>
+        <g class="finger-scan-points" fill="#eaffff">
+          <circle cx="160" cy="79" r="3"/><circle cx="219" cy="37" r="3.5"/><circle cx="283" cy="55" r="3"/><circle cx="349" cy="82" r="3"/>
+        </g>
+      </svg>
+      <div class="scan-plane"></div>
+    </div>
+    <div class="readout"><strong id="scanStatus">PLACE HAND ABOVE SENSOR</strong><div class="percent" id="scanPercent">00%</div><div class="status">PALM VECTOR / <span id="scanSub">READY</span></div><div class="progress"><span id="progressFill"></span></div></div>
+    <div class="bottom-note"><b>TOUCH / HOLD</b> THE HOLOGRAPHIC PALM · ALIGN FINGERS WITH THE VECTOR FIELD · PALM/ID CONCEPT DEMO</div>
+  </div>
+</section>
+<section class="screen" id="profile">
+ <div class="eyebrow">03 / IDENTITY RECORD</div><h1 class="headline" style="margin-bottom:24px">Identity sequence <span style="color:var(--cyan)">complete.</span></h1>
+ <div class="profile-layout"><div class="profile-hero"><div class="avatar" id="avatar">AP</div><div class="profile-name" id="profileName">AJI ISMOYO, S.Sos</div><div class="role" id="profileRole">KEPALA SEKOLAH SMK ALHUSAIN KELING</div><div class="id-tag" id="profileId">ID · PERSON1</div></div>
+ <div class="data-card"><div class="data-head"><div><div class="card-title" style="margin-bottom:7px">DATA PERSONAL</div><div style="font-size:19px;font-weight:650">Ringkasan identitas</div></div><div class="verified">● VERIFIED</div></div><div class="data-grid"><div class="datum"><label>Nama lengkap</label><strong id="dataName"></strong></div><div class="datum"><label>Umur</label><strong id="dataAge"></strong></div><div class="datum"><label>Pekerjaan</label><strong id="dataJob"></strong></div><div class="datum"><label>Status identitas</label><strong style="color:#5cffbb">Terverifikasi</strong></div></div><div class="description"><div style="font-size:10px;letter-spacing:.14em;color:var(--cyan);margin-bottom:8px">DESKRIPSI</div><span id="dataDescription"></span></div><div class="actions"><button class="btn" onclick="showSuccess()">SELESAI ↗</button><button class="btn secondary" onclick="showScreen('login')">KELUAR</button></div></div></div>
+</section>
+<section class="screen" id="success"><div class="success-event"><div class="event-ring"></div><div class="event-particles"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="celebration-burst burst-one"></div><div class="celebration-burst burst-two"></div><div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div><div class="event-content"><div class="event-kicker">TELAH RESMI DIBUKA</div><h1 class="event-title">PELANTIKAN CALON PENEGAK LAKSANA <span>ANGKATAN 18</span></h1><div class="event-line"></div><div class="event-sub">SEMANGAT · DAN SEMOGA SUKSES</div></div></div></section>
+</main>
+<footer class="footer"><span>PALM/ID · HOLOGRAPHIC IDENTITY CONCEPT</span><span>DEMO DATA ONLY · NO BIOMETRIC DATA STORED</span></footer>
+</div>
+<audio id="eventMusic" preload="auto" loop></audio>
+<script>
+// Paste a direct MP3/WAV/OGG URL here for the event backsound.
+const BACKSOUND_URL = "";
+function setBacksound(url){const a=document.getElementById('eventMusic');if(!a)return;a.src=url;a.volume=.42;a.loop=true;}
+function playBacksound(){const a=document.getElementById('eventMusic');if(!a||!a.src)return;a.play().catch(()=>{});}
+const people={
+ person1:{id:'PERSON1',name:'AJI ISMOYO, S.Sos',age:'55 tahun',job:'KA. MABIGUS SMK AL HUSAIN KELING',role:'KA. MABIGUS',initials:'AP',description:'Bapak Aji ismojo, S.Sos lahir pada 28 agustus 1971, menjabat sebagai kepala sekolah mulai bulan juli tahun 2010'},
+ person2:{id:'PERSON2',name:'NUR AHMAD AROFIQ, S.Pd',age:'40 tahun',job:'KETUA GUGUS DEPAN JEPARA 01.157-01.158',role:'ANALIS DATA',initials:'NP',description:'Bapak NUR AHMAD AROFIQ, S.Pd lahir pada 04 maret 1986, juli 2010 sebagai guru tetap'}
+};
+let activePerson=null, scanTimer=null, audioCtx=null, masterGain=null;
+function useDemo(id){document.getElementById('username').value=id;document.getElementById('loginError').textContent='';}
+function audioInit(){if(audioCtx)return;try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();masterGain=audioCtx.createGain();masterGain.gain.value=.035;masterGain.connect(audioCtx.destination)}catch(e){}}
+function blip(f=700,d=.05,v=.025){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain(),t=audioCtx.currentTime;o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(masterGain);o.start(t);o.stop(t+d+.02)}
+function loginUser(){if(BACKSOUND_URL)setBacksound(BACKSOUND_URL);const id=document.getElementById('username').value.trim().toLowerCase();if(!people[id]){document.getElementById('loginError').textContent='ID tidak ditemukan. Coba person1 atau person2.';return;}activePerson=people[id];audioInit();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();showScreen('scan');resetScan();fillScanHud(activePerson);}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});if(id!=='scan'&&scanTimer){clearTimeout(scanTimer);scanTimer=null;}}
+function resetScan(){const box=document.getElementById('scanBox');box.classList.remove('scanning');document.getElementById('scanStatus').textContent='PLACE HAND ABOVE SENSOR';document.getElementById('scanSub').textContent='READY';document.getElementById('scanPercent').textContent='00%';document.getElementById('progressFill').style.width='0';document.getElementById('scanMatch').textContent='0%';document.getElementById('scanLink').textContent='WAITING';document.getElementById('vectorState').textContent='STANDBY';}
+function fillScanHud(p){document.getElementById('scanUserLabel').textContent='SUBJECT: '+p.id;document.getElementById('scanDataName').textContent=p.name.toUpperCase();document.getElementById('scanDataJob').textContent=p.job.toUpperCase();document.getElementById('scanDataId').textContent=p.id;}
+function startScan(){if(!activePerson||scanTimer)return;audioInit();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();const box=document.getElementById('scanBox');box.classList.add('scanning');const status=document.getElementById('scanStatus'),sub=document.getElementById('scanSub'),match=document.getElementById('scanMatch'),link=document.getElementById('scanLink'),state=document.getElementById('vectorState');let p=0,last=0;status.textContent='HAND DETECTED';sub.textContent='LOCKING TARGET';state.textContent='TARGET LOCKED';match.textContent='CALIBRATING';link.textContent='ESTABLISHING LINK';blip(880,.08,.035);scanTimer=setInterval(()=>{p=Math.min(100,p+1.15+Math.random()*2.25);const n=Math.floor(p);document.getElementById('scanPercent').textContent=String(n).padStart(2,'0')+'%';document.getElementById('progressFill').style.width=n+'%';if(n-last>=5){last=n;blip(500+n*5,.035,.012)}if(p>20){status.textContent='CAPTURING PALM GEOMETRY';sub.textContent='MESH ACQUISITION';state.textContent='GEOMETRY LOCKED'}if(p>42){status.textContent='MAPPING VASCULAR PATTERN';sub.textContent='VEIN VECTOR';match.textContent='ANALYZING';link.textContent='BIOMETRIC CHANNEL'}if(p>67){status.textContent='GENERATING BIOMETRIC SIGNATURE';sub.textContent='HASH / PALM-ID';state.textContent='SIGNATURE READY';match.textContent=Math.floor(p)+'% MATCH'}if(p>87){status.textContent='VERIFYING IDENTITY';sub.textContent='SECURE MATCH';match.textContent=Math.floor(p)+'% MATCH';link.textContent='SIGNATURE CONFIRMED'}if(p>=100){clearInterval(scanTimer);scanTimer=null;status.textContent='IDENTITY VERIFIED';sub.textContent='ACCESS GRANTED';state.textContent='SECURE';match.textContent='MATCH 100%';link.textContent='CONNECTED';blip(980,.18,.06);setTimeout(()=>{showScreen('success');launchCelebration();playBacksound();blip(1240,.28,.08);setTimeout(()=>blip(1560,.4,.045),180)},900)}},90);}
+function fillProfile(p){document.getElementById('avatar').textContent=p.initials;document.getElementById('profileName').textContent=p.name;document.getElementById('profileRole').textContent=p.role;document.getElementById('profileId').textContent='ID · '+p.id;document.getElementById('dataName').textContent=p.name;document.getElementById('dataAge').textContent=p.age;document.getElementById('dataJob').textContent=p.job;document.getElementById('dataDescription').textContent=p.description;document.getElementById('successPerson').textContent=p.id;}
+function showSuccess(){showScreen('success');launchCelebration();}
+function launchCelebration(){
+ const layer=document.getElementById('confettiLayer');
+ if(!layer||layer.dataset.ready)return;
+ layer.dataset.ready='1';
+ const colors=['#8fffff','#ff77d9','#ffe77a','#9d8cff','#ffffff','#70ffb6','#ff9d65'];
+ for(let i=0;i<100;i++){
+  const piece=document.createElement('i');
+  piece.className='confetti-piece';
+  piece.style.left=(Math.random()*100)+'%';
+  piece.style.color=colors[i%colors.length];
+  piece.style.background=colors[i%colors.length];
+  piece.style.setProperty('--fall',(3.2+Math.random()*4.2)+'s');
+  piece.style.setProperty('--delay',(Math.random()*4.5)+'s');
+  piece.style.setProperty('--drift',((Math.random()-.5)*220)+'px');
+  piece.style.width=(3+Math.random()*5)+'px';
+  piece.style.height=(7+Math.random()*10)+'px';
+  layer.appendChild(piece);
+ }
+}
+document.getElementById('handButton').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();startScan();}});
+document.getElementById('username').addEventListener('keydown',e=>{if(e.key==='Enter')loginUser()});
+</script>
+<script>
+// Six-to-eight-second cinematic scan; the finale occupies the entire viewport.
+function startScan(){
+ if(!activePerson||scanTimer)return;
+ audioInit();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+ const box=document.getElementById('scanBox'),status=document.getElementById('scanStatus'),sub=document.getElementById('scanSub'),match=document.getElementById('scanMatch'),link=document.getElementById('scanLink'),state=document.getElementById('vectorState');
+ box.classList.add('scanning');let p=0,last=0;
+ status.textContent='HAND DETECTED';sub.textContent='LOCKING TARGET';state.textContent='TARGET LOCKED';match.textContent='CALIBRATING';link.textContent='ESTABLISHING LINK';blip(880,.08,.035);
+ scanTimer=setInterval(()=>{
+  p=Math.min(100,p+1.1+Math.random()*.6);const n=Math.floor(p);
+  document.getElementById('scanPercent').textContent=String(n).padStart(2,'0')+'%';document.getElementById('progressFill').style.width=n+'%';
+  if(n-last>=5){last=n;blip(500+n*5,.035,.012)}
+  if(n>20){status.textContent='CAPTURING PALM GEOMETRY';sub.textContent='MESH ACQUISITION';state.textContent='GEOMETRY LOCKED'}
+  if(n>42){status.textContent='MAPPING VASCULAR PATTERN';sub.textContent='VEIN VECTOR';match.textContent='ANALYZING';link.textContent='BIOMETRIC CHANNEL'}
+  if(n>67){status.textContent='GENERATING BIOMETRIC SIGNATURE';sub.textContent='HASH / PALM-ID';state.textContent='SIGNATURE READY';match.textContent=n+'% MATCH'}
+  if(n>87){status.textContent='VERIFYING IDENTITY';sub.textContent='SECURE MATCH';match.textContent=n+'% MATCH';link.textContent='SIGNATURE CONFIRMED'}
+  if(n>=100){clearInterval(scanTimer);scanTimer=null;status.textContent='IDENTITY VERIFIED';sub.textContent='PELANTIKAN CALON PENEGAK LAKSANA';state.textContent='SECURE';match.textContent='MATCH 100%';link.textContent='CONNECTED';blip(980,.18,.06);setTimeout(()=>{showScreen('success');launchCelebration();playBacksound();blip(1240,.28,.08);setTimeout(()=>blip(1560,.4,.045),180)},450)}
+ },100);
+}
+</script>
+</body>
+</html>
